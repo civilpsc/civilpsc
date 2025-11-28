@@ -1,8 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+
+import 'firebase_options.dart';
 import 'screens/otp_screen.dart';
 import 'screens/home_screen.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Firebase initialize – try/catch ഇടുന്നു, എന്തെങ്കിലും issue വന്നാലും app open ആകാൻ
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } catch (e) {
+    // Debugൽ log കാണാൻ മാത്രം; userക്ക് പ്രശ്നമില്ല.
+    debugPrint('Firebase init error: $e');
+  }
+
   runApp(const CivilPSCApp());
 }
 
