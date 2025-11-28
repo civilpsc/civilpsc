@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "536054975472",
+    "project_id": "civilpsc-9b1ad",
+    "storage_bucket": "civilpsc-9b1ad.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:536054975472:android:bf63aac6c29979a0d16b35",
+        "android_client_info": {
+          "package_name": "com.civilpsc.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAu2s7vPF_Dj8T7eVfeNqzpxyF2DRJ7su0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
