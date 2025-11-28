@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pdfx/pdfx.dart';
 
 class StudyMaterialsHome extends StatelessWidget {
   const StudyMaterialsHome({super.key});
@@ -53,7 +54,7 @@ class MaterialsList extends StatelessWidget {
           onTap: () {
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (_) => PdfPlaceholderPage(item: m),
+                builder: (_) => PdfViewerPage(item: m),
               ),
             );
           },
@@ -68,410 +69,568 @@ class MaterialItem {
   final String subject;
   final String type; // full | short | cheat
   final String emoji;
+  final String assetPath; // PDF asset path
 
   MaterialItem({
     required this.title,
     required this.subject,
     required this.type,
     required this.emoji,
+    required this.assetPath,
   });
 }
 
 // ---- ALL SUBJECTS: FULL / SHORT / CHEAT ----
+// (ഇമോജി എല്ലാം പഴയതേ, assetPath മാത്രം ചേർത്തു)
 
 final List<MaterialItem> _allMaterials = [
   // Building Materials
   MaterialItem(
-      title: 'Building Materials – Full Notes',
-      subject: 'Building Materials',
-      type: 'full',
-      emoji: '📚'),
+    title: 'Building Materials – Full Notes',
+    subject: 'Building Materials',
+    type: 'full',
+    emoji: '📚',
+    assetPath: 'assets/pdfs/building_materials_full.pdf',
+  ),
   MaterialItem(
-      title: 'Building Materials – Short Notes',
-      subject: 'Building Materials',
-      type: 'short',
-      emoji: '⚡'),
+    title: 'Building Materials – Short Notes',
+    subject: 'Building Materials',
+    type: 'short',
+    emoji: '⚡',
+    assetPath: 'assets/pdfs/building_materials_short.pdf',
+  ),
   MaterialItem(
-      title: 'Building Materials – Cheat Sheet',
-      subject: 'Building Materials',
-      type: 'cheat',
-      emoji: '🚀'),
+    title: 'Building Materials – Cheat Sheet',
+    subject: 'Building Materials',
+    type: 'cheat',
+    emoji: '🚀',
+    assetPath: 'assets/pdfs/building_materials_cheat.pdf',
+  ),
 
   // Building Construction
   MaterialItem(
-      title: 'Building Construction – Full Notes',
-      subject: 'Building Construction',
-      type: 'full',
-      emoji: '🏗️'),
+    title: 'Building Construction – Full Notes',
+    subject: 'Building Construction',
+    type: 'full',
+    emoji: '🏗️',
+    assetPath: 'assets/pdfs/building_construction_full.pdf',
+  ),
   MaterialItem(
-      title: 'Building Construction – Short Notes',
-      subject: 'Building Construction',
-      type: 'short',
-      emoji: '⚡'),
+    title: 'Building Construction – Short Notes',
+    subject: 'Building Construction',
+    type: 'short',
+    emoji: '⚡',
+    assetPath: 'assets/pdfs/building_construction_short.pdf',
+  ),
   MaterialItem(
-      title: 'Building Construction – Cheat Sheet',
-      subject: 'Building Construction',
-      type: 'cheat',
-      emoji: '🚀'),
+    title: 'Building Construction – Cheat Sheet',
+    subject: 'Building Construction',
+    type: 'cheat',
+    emoji: '🚀',
+    assetPath: 'assets/pdfs/building_construction_cheat.pdf',
+  ),
 
   // Engineering Drawing
   MaterialItem(
-      title: 'Engineering Drawing – Full Notes',
-      subject: 'Engineering Drawing',
-      type: 'full',
-      emoji: '📐'),
+    title: 'Engineering Drawing – Full Notes',
+    subject: 'Engineering Drawing',
+    type: 'full',
+    emoji: '📐',
+    assetPath: 'assets/pdfs/engineering_drawing_full.pdf',
+  ),
   MaterialItem(
-      title: 'Engineering Drawing – Short Notes',
-      subject: 'Engineering Drawing',
-      type: 'short',
-      emoji: '⚡'),
+    title: 'Engineering Drawing – Short Notes',
+    subject: 'Engineering Drawing',
+    type: 'short',
+    emoji: '⚡',
+    assetPath: 'assets/pdfs/engineering_drawing_short.pdf',
+  ),
   MaterialItem(
-      title: 'Engineering Drawing – Cheat Sheet',
-      subject: 'Engineering Drawing',
-      type: 'cheat',
-      emoji: '🚀'),
+    title: 'Engineering Drawing – Cheat Sheet',
+    subject: 'Engineering Drawing',
+    type: 'cheat',
+    emoji: '🚀',
+    assetPath: 'assets/pdfs/engineering_drawing_cheat.pdf',
+  ),
 
   // AutoCAD
   MaterialItem(
-      title: 'AutoCAD – Full Notes',
-      subject: 'AutoCAD',
-      type: 'full',
-      emoji: '💻'),
+    title: 'AutoCAD – Full Notes',
+    subject: 'AutoCAD',
+    type: 'full',
+    emoji: '💻',
+    assetPath: 'assets/pdfs/autocad_full.pdf',
+  ),
   MaterialItem(
-      title: 'AutoCAD – Short Notes',
-      subject: 'AutoCAD',
-      type: 'short',
-      emoji: '⚡'),
+    title: 'AutoCAD – Short Notes',
+    subject: 'AutoCAD',
+    type: 'short',
+    emoji: '⚡',
+    assetPath: 'assets/pdfs/autocad_short.pdf',
+  ),
   MaterialItem(
-      title: 'AutoCAD – Cheat Sheet',
-      subject: 'AutoCAD',
-      type: 'cheat',
-      emoji: '🚀'),
+    title: 'AutoCAD – Cheat Sheet',
+    subject: 'AutoCAD',
+    type: 'cheat',
+    emoji: '🚀',
+    assetPath: 'assets/pdfs/autocad_cheat.pdf',
+  ),
 
   // Irrigation Engineering
   MaterialItem(
-      title: 'Irrigation Engineering – Full Notes',
-      subject: 'Irrigation Engineering',
-      type: 'full',
-      emoji: '💧'),
+    title: 'Irrigation Engineering – Full Notes',
+    subject: 'Irrigation Engineering',
+    type: 'full',
+    emoji: '💧',
+    assetPath: 'assets/pdfs/irrigation_full.pdf',
+  ),
   MaterialItem(
-      title: 'Irrigation Engineering – Short Notes',
-      subject: 'Irrigation Engineering',
-      type: 'short',
-      emoji: '⚡'),
+    title: 'Irrigation Engineering – Short Notes',
+    subject: 'Irrigation Engineering',
+    type: 'short',
+    emoji: '⚡',
+    assetPath: 'assets/pdfs/irrigation_short.pdf',
+  ),
   MaterialItem(
-      title: 'Irrigation Engineering – Cheat Sheet',
-      subject: 'Irrigation Engineering',
-      type: 'cheat',
-      emoji: '🚀'),
+    title: 'Irrigation Engineering – Cheat Sheet',
+    subject: 'Irrigation Engineering',
+    type: 'cheat',
+    emoji: '🚀',
+    assetPath: 'assets/pdfs/irrigation_cheat.pdf',
+  ),
 
   // Concrete Technology & RCC
   MaterialItem(
-      title: 'Concrete Technology & RCC – Full Notes',
-      subject: 'Concrete Technology & RCC',
-      type: 'full',
-      emoji: '🧱'),
+    title: 'Concrete Technology & RCC – Full Notes',
+    subject: 'Concrete Technology & RCC',
+    type: 'full',
+    emoji: '🧱',
+    assetPath: 'assets/pdfs/concrete_rcc_full.pdf',
+  ),
   MaterialItem(
-      title: 'Concrete Technology & RCC – Short Notes',
-      subject: 'Concrete Technology & RCC',
-      type: 'short',
-      emoji: '⚡'),
+    title: 'Concrete Technology & RCC – Short Notes',
+    subject: 'Concrete Technology & RCC',
+    type: 'short',
+    emoji: '⚡',
+    assetPath: 'assets/pdfs/concrete_rcc_short.pdf',
+  ),
   MaterialItem(
-      title: 'Concrete Technology & RCC – Cheat Sheet',
-      subject: 'Concrete Technology & RCC',
-      type: 'cheat',
-      emoji: '🚀'),
+    title: 'Concrete Technology & RCC – Cheat Sheet',
+    subject: 'Concrete Technology & RCC',
+    type: 'cheat',
+    emoji: '🚀',
+    assetPath: 'assets/pdfs/concrete_rcc_cheat.pdf',
+  ),
 
   // Steel Design
   MaterialItem(
-      title: 'Steel Design – Full Notes',
-      subject: 'Steel Design',
-      type: 'full',
-      emoji: '🔩'),
+    title: 'Steel Design – Full Notes',
+    subject: 'Steel Design',
+    type: 'full',
+    emoji: '🔩',
+    assetPath: 'assets/pdfs/steel_design_full.pdf',
+  ),
   MaterialItem(
-      title: 'Steel Design – Short Notes',
-      subject: 'Steel Design',
-      type: 'short',
-      emoji: '⚡'),
+    title: 'Steel Design – Short Notes',
+    subject: 'Steel Design',
+    type: 'short',
+    emoji: '⚡',
+    assetPath: 'assets/pdfs/steel_design_short.pdf',
+  ),
   MaterialItem(
-      title: 'Steel Design – Cheat Sheet',
-      subject: 'Steel Design',
-      type: 'cheat',
-      emoji: '🚀'),
+    title: 'Steel Design – Cheat Sheet',
+    subject: 'Steel Design',
+    type: 'cheat',
+    emoji: '🚀',
+    assetPath: 'assets/pdfs/steel_design_cheat.pdf',
+  ),
 
   // Environmental Engineering
   MaterialItem(
-      title: 'Environmental Engineering – Full Notes',
-      subject: 'Environmental Engineering',
-      type: 'full',
-      emoji: '🌱'),
+    title: 'Environmental Engineering – Full Notes',
+    subject: 'Environmental Engineering',
+    type: 'full',
+    emoji: '🌱',
+    assetPath: 'assets/pdfs/environmental_full.pdf',
+  ),
   MaterialItem(
-      title: 'Environmental Engineering – Short Notes',
-      subject: 'Environmental Engineering',
-      type: 'short',
-      emoji: '⚡'),
+    title: 'Environmental Engineering – Short Notes',
+    subject: 'Environmental Engineering',
+    type: 'short',
+    emoji: '⚡',
+    assetPath: 'assets/pdfs/environmental_short.pdf',
+  ),
   MaterialItem(
-      title: 'Environmental Engineering – Cheat Sheet',
-      subject: 'Environmental Engineering',
-      type: 'cheat',
-      emoji: '🚀'),
+    title: 'Environmental Engineering – Cheat Sheet',
+    subject: 'Environmental Engineering',
+    type: 'cheat',
+    emoji: '🚀',
+    assetPath: 'assets/pdfs/environmental_cheat.pdf',
+  ),
 
   // Hydrology
   MaterialItem(
-      title: 'Hydrology – Full Notes',
-      subject: 'Hydrology',
-      type: 'full',
-      emoji: '💦'),
+    title: 'Hydrology – Full Notes',
+    subject: 'Hydrology',
+    type: 'full',
+    emoji: '💦',
+    assetPath: 'assets/pdfs/hydrology_full.pdf',
+  ),
   MaterialItem(
-      title: 'Hydrology – Short Notes',
-      subject: 'Hydrology',
-      type: 'short',
-      emoji: '⚡'),
+    title: 'Hydrology – Short Notes',
+    subject: 'Hydrology',
+    type: 'short',
+    emoji: '⚡',
+    assetPath: 'assets/pdfs/hydrology_short.pdf',
+  ),
   MaterialItem(
-      title: 'Hydrology – Cheat Sheet',
-      subject: 'Hydrology',
-      type: 'cheat',
-      emoji: '🚀'),
+    title: 'Hydrology – Cheat Sheet',
+    subject: 'Hydrology',
+    type: 'cheat',
+    emoji: '🚀',
+    assetPath: 'assets/pdfs/hydrology_cheat.pdf',
+  ),
 
   // Estimation, Valuation & Costing
   MaterialItem(
-      title: 'Estimation, Valuation & Costing – Full Notes',
-      subject: 'Estimation, Valuation & Costing',
-      type: 'full',
-      emoji: '🧮'),
+    title: 'Estimation, Valuation & Costing – Full Notes',
+    subject: 'Estimation, Valuation & Costing',
+    type: 'full',
+    emoji: '🧮',
+    assetPath: 'assets/pdfs/estimation_full.pdf',
+  ),
   MaterialItem(
-      title: 'Estimation, Valuation & Costing – Short Notes',
-      subject: 'Estimation, Valuation & Costing',
-      type: 'short',
-      emoji: '⚡'),
+    title: 'Estimation, Valuation & Costing – Short Notes',
+    subject: 'Estimation, Valuation & Costing',
+    type: 'short',
+    emoji: '⚡',
+    assetPath: 'assets/pdfs/estimation_short.pdf',
+  ),
   MaterialItem(
-      title: 'Estimation, Valuation & Costing – Cheat Sheet',
-      subject: 'Estimation, Valuation & Costing',
-      type: 'cheat',
-      emoji: '🚀'),
+    title: 'Estimation, Valuation & Costing – Cheat Sheet',
+    subject: 'Estimation, Valuation & Costing',
+    type: 'cheat',
+    emoji: '🚀',
+    assetPath: 'assets/pdfs/estimation_cheat.pdf',
+  ),
 
   // Strength of Materials
   MaterialItem(
-      title: 'Strength of Materials – Full Notes',
-      subject: 'Strength of Materials',
-      type: 'full',
-      emoji: '🪨'),
+    title: 'Strength of Materials – Full Notes',
+    subject: 'Strength of Materials',
+    type: 'full',
+    emoji: '🪨',
+    assetPath: 'assets/pdfs/som_full.pdf',
+  ),
   MaterialItem(
-      title: 'Strength of Materials – Short Notes',
-      subject: 'Strength of Materials',
-      type: 'short',
-      emoji: '⚡'),
+    title: 'Strength of Materials – Short Notes',
+    subject: 'Strength of Materials',
+    type: 'short',
+    emoji: '⚡',
+    assetPath: 'assets/pdfs/som_short.pdf',
+  ),
   MaterialItem(
-      title: 'Strength of Materials – Cheat Sheet',
-      subject: 'Strength of Materials',
-      type: 'cheat',
-      emoji: '🚀'),
+    title: 'Strength of Materials – Cheat Sheet',
+    subject: 'Strength of Materials',
+    type: 'cheat',
+    emoji: '🚀',
+    assetPath: 'assets/pdfs/som_cheat.pdf',
+  ),
 
   // Highway Engineering
   MaterialItem(
-      title: 'Highway Engineering – Full Notes',
-      subject: 'Highway Engineering',
-      type: 'full',
-      emoji: '🛣️'),
+    title: 'Highway Engineering – Full Notes',
+    subject: 'Highway Engineering',
+    type: 'full',
+    emoji: '🛣️',
+    assetPath: 'assets/pdfs/highway_full.pdf',
+  ),
   MaterialItem(
-      title: 'Highway Engineering – Short Notes',
-      subject: 'Highway Engineering',
-      type: 'short',
-      emoji: '⚡'),
+    title: 'Highway Engineering – Short Notes',
+    subject: 'Highway Engineering',
+    type: 'short',
+    emoji: '⚡',
+    assetPath: 'assets/pdfs/highway_short.pdf',
+  ),
   MaterialItem(
-      title: 'Highway Engineering – Cheat Sheet',
-      subject: 'Highway Engineering',
-      type: 'cheat',
-      emoji: '🚀'),
+    title: 'Highway Engineering – Cheat Sheet',
+    subject: 'Highway Engineering',
+    type: 'cheat',
+    emoji: '🚀',
+    assetPath: 'assets/pdfs/highway_cheat.pdf',
+  ),
 
   // Bridge Engineering
   MaterialItem(
-      title: 'Bridge Engineering – Full Notes',
-      subject: 'Bridge Engineering',
-      type: 'full',
-      emoji: '🌉'),
+    title: 'Bridge Engineering – Full Notes',
+    subject: 'Bridge Engineering',
+    type: 'full',
+    emoji: '🌉',
+    assetPath: 'assets/pdfs/bridge_full.pdf',
+  ),
   MaterialItem(
-      title: 'Bridge Engineering – Short Notes',
-      subject: 'Bridge Engineering',
-      type: 'short',
-      emoji: '⚡'),
+    title: 'Bridge Engineering – Short Notes',
+    subject: 'Bridge Engineering',
+    type: 'short',
+    emoji: '⚡',
+    assetPath: 'assets/pdfs/bridge_short.pdf',
+  ),
   MaterialItem(
-      title: 'Bridge Engineering – Cheat Sheet',
-      subject: 'Bridge Engineering',
-      type: 'cheat',
-      emoji: '🚀'),
+    title: 'Bridge Engineering – Cheat Sheet',
+    subject: 'Bridge Engineering',
+    type: 'cheat',
+    emoji: '🚀',
+    assetPath: 'assets/pdfs/bridge_cheat.pdf',
+  ),
 
   // Railway Engineering
   MaterialItem(
-      title: 'Railway Engineering – Full Notes',
-      subject: 'Railway Engineering',
-      type: 'full',
-      emoji: '🚆'),
+    title: 'Railway Engineering – Full Notes',
+    subject: 'Railway Engineering',
+    type: 'full',
+    emoji: '🚆',
+    assetPath: 'assets/pdfs/railway_full.pdf',
+  ),
   MaterialItem(
-      title: 'Railway Engineering – Short Notes',
-      subject: 'Railway Engineering',
-      type: 'short',
-      emoji: '⚡'),
+    title: 'Railway Engineering – Short Notes',
+    subject: 'Railway Engineering',
+    type: 'short',
+    emoji: '⚡',
+    assetPath: 'assets/pdfs/railway_short.pdf',
+  ),
   MaterialItem(
-      title: 'Railway Engineering – Cheat Sheet',
-      subject: 'Railway Engineering',
-      type: 'cheat',
-      emoji: '🚀'),
+    title: 'Railway Engineering – Cheat Sheet',
+    subject: 'Railway Engineering',
+    type: 'cheat',
+    emoji: '🚀',
+    assetPath: 'assets/pdfs/railway_cheat.pdf',
+  ),
 
   // Dock, Harbour & Tunnel
   MaterialItem(
-      title: 'Dock, Harbour & Tunnel – Full Notes',
-      subject: 'Dock, Harbour & Tunnel Engineering',
-      type: 'full',
-      emoji: '⚓'),
+    title: 'Dock, Harbour & Tunnel – Full Notes',
+    subject: 'Dock, Harbour & Tunnel Engineering',
+    type: 'full',
+    emoji: '⚓',
+    assetPath: 'assets/pdfs/dock_full.pdf',
+  ),
   MaterialItem(
-      title: 'Dock, Harbour & Tunnel – Short Notes',
-      subject: 'Dock, Harbour & Tunnel Engineering',
-      type: 'short',
-      emoji: '⚡'),
+    title: 'Dock, Harbour & Tunnel – Short Notes',
+    subject: 'Dock, Harbour & Tunnel Engineering',
+    type: 'short',
+    emoji: '⚡',
+    assetPath: 'assets/pdfs/dock_short.pdf',
+  ),
   MaterialItem(
-      title: 'Dock, Harbour & Tunnel – Cheat Sheet',
-      subject: 'Dock, Harbour & Tunnel Engineering',
-      type: 'cheat',
-      emoji: '🚀'),
+    title: 'Dock, Harbour & Tunnel – Cheat Sheet',
+    subject: 'Dock, Harbour & Tunnel Engineering',
+    type: 'cheat',
+    emoji: '🚀',
+    assetPath: 'assets/pdfs/dock_cheat.pdf',
+  ),
 
   // Airport Engineering
   MaterialItem(
-      title: 'Airport Engineering – Full Notes',
-      subject: 'Airport Engineering',
-      type: 'full',
-      emoji: '✈️'),
+    title: 'Airport Engineering – Full Notes',
+    subject: 'Airport Engineering',
+    type: 'full',
+    emoji: '✈️',
+    assetPath: 'assets/pdfs/airport_full.pdf',
+  ),
   MaterialItem(
-      title: 'Airport Engineering – Short Notes',
-      subject: 'Airport Engineering',
-      type: 'short',
-      emoji: '⚡'),
+    title: 'Airport Engineering – Short Notes',
+    subject: 'Airport Engineering',
+    type: 'short',
+    emoji: '⚡',
+    assetPath: 'assets/pdfs/airport_short.pdf',
+  ),
   MaterialItem(
-      title: 'Airport Engineering – Cheat Sheet',
-      subject: 'Airport Engineering',
-      type: 'cheat',
-      emoji: '🚀'),
+    title: 'Airport Engineering – Cheat Sheet',
+    subject: 'Airport Engineering',
+    type: 'cheat',
+    emoji: '🚀',
+    assetPath: 'assets/pdfs/airport_cheat.pdf',
+  ),
 
   // Surveying & Levelling
   MaterialItem(
-      title: 'Surveying & Levelling – Full Notes',
-      subject: 'Surveying & Levelling',
-      type: 'full',
-      emoji: '🗺️'),
+    title: 'Surveying & Levelling – Full Notes',
+    subject: 'Surveying & Levelling',
+    type: 'full',
+    emoji: '🗺️',
+    assetPath: 'assets/pdfs/surveying_full.pdf',
+  ),
   MaterialItem(
-      title: 'Surveying & Levelling – Short Notes',
-      subject: 'Surveying & Levelling',
-      type: 'short',
-      emoji: '⚡'),
+    title: 'Surveying & Levelling – Short Notes',
+    subject: 'Surveying & Levelling',
+    type: 'short',
+    emoji: '⚡',
+    assetPath: 'assets/pdfs/surveying_short.pdf',
+  ),
   MaterialItem(
-      title: 'Surveying & Levelling – Cheat Sheet',
-      subject: 'Surveying & Levelling',
-      type: 'cheat',
-      emoji: '🚀'),
+    title: 'Surveying & Levelling – Cheat Sheet',
+    subject: 'Surveying & Levelling',
+    type: 'cheat',
+    emoji: '🚀',
+    assetPath: 'assets/pdfs/surveying_cheat.pdf',
+  ),
 
   // Advanced Surveying
   MaterialItem(
-      title: 'Advanced Surveying – Full Notes',
-      subject: 'Advanced Surveying',
-      type: 'full',
-      emoji: '🧭'),
+    title: 'Advanced Surveying – Full Notes',
+    subject: 'Advanced Surveying',
+    type: 'full',
+    emoji: '🧭',
+    assetPath: 'assets/pdfs/advanced_surveying_full.pdf',
+  ),
   MaterialItem(
-      title: 'Advanced Surveying – Short Notes',
-      subject: 'Advanced Surveying',
-      type: 'short',
-      emoji: '⚡'),
+    title: 'Advanced Surveying – Short Notes',
+    subject: 'Advanced Surveying',
+    type: 'short',
+    emoji: '⚡',
+    assetPath: 'assets/pdfs/advanced_surveying_short.pdf',
+  ),
   MaterialItem(
-      title: 'Advanced Surveying – Cheat Sheet',
-      subject: 'Advanced Surveying',
-      type: 'cheat',
-      emoji: '🚀'),
+    title: 'Advanced Surveying – Cheat Sheet',
+    subject: 'Advanced Surveying',
+    type: 'cheat',
+    emoji: '🚀',
+    assetPath: 'assets/pdfs/advanced_surveying_cheat.pdf',
+  ),
 
   // Engineering Mechanics
   MaterialItem(
-      title: 'Engineering Mechanics – Full Notes',
-      subject: 'Engineering Mechanics',
-      type: 'full',
-      emoji: '⚙️'),
+    title: 'Engineering Mechanics – Full Notes',
+    subject: 'Engineering Mechanics',
+    type: 'full',
+    emoji: '⚙️',
+    assetPath: 'assets/pdfs/engg_mechanics_full.pdf',
+  ),
   MaterialItem(
-      title: 'Engineering Mechanics – Short Notes',
-      subject: 'Engineering Mechanics',
-      type: 'short',
-      emoji: '⚡'),
+    title: 'Engineering Mechanics – Short Notes',
+    subject: 'Engineering Mechanics',
+    type: 'short',
+    emoji: '⚡',
+    assetPath: 'assets/pdfs/engg_mechanics_short.pdf',
+  ),
   MaterialItem(
-      title: 'Engineering Mechanics – Cheat Sheet',
-      subject: 'Engineering Mechanics',
-      type: 'cheat',
-      emoji: '🚀'),
+    title: 'Engineering Mechanics – Cheat Sheet',
+    subject: 'Engineering Mechanics',
+    type: 'cheat',
+    emoji: '🚀',
+    assetPath: 'assets/pdfs/engg_mechanics_cheat.pdf',
+  ),
 
   // Fluid Mechanics
   MaterialItem(
-      title: 'Fluid Mechanics – Full Notes',
-      subject: 'Fluid Mechanics',
-      type: 'full',
-      emoji: '🌊'),
+    title: 'Fluid Mechanics – Full Notes',
+    subject: 'Fluid Mechanics',
+    type: 'full',
+    emoji: '🌊',
+    assetPath: 'assets/pdfs/fluid_mechanics_full.pdf',
+  ),
   MaterialItem(
-      title: 'Fluid Mechanics – Short Notes',
-      subject: 'Fluid Mechanics',
-      type: 'short',
-      emoji: '⚡'),
+    title: 'Fluid Mechanics – Short Notes',
+    subject: 'Fluid Mechanics',
+    type: 'short',
+    emoji: '⚡',
+    assetPath: 'assets/pdfs/fluid_mechanics_short.pdf',
+  ),
   MaterialItem(
-      title: 'Fluid Mechanics – Cheat Sheet',
-      subject: 'Fluid Mechanics',
-      type: 'cheat',
-      emoji: '🚀'),
+    title: 'Fluid Mechanics – Cheat Sheet',
+    subject: 'Fluid Mechanics',
+    type: 'cheat',
+    emoji: '🚀',
+    assetPath: 'assets/pdfs/fluid_mechanics_cheat.pdf',
+  ),
 
   // Workshop Calculation
   MaterialItem(
-      title: 'Workshop Calculation – Full Notes',
-      subject: 'Workshop Calculation',
-      type: 'full',
-      emoji: '🛠️'),
+    title: 'Workshop Calculation – Full Notes',
+    subject: 'Workshop Calculation',
+    type: 'full',
+    emoji: '🛠️',
+    assetPath: 'assets/pdfs/workshop_full.pdf',
+  ),
   MaterialItem(
-      title: 'Workshop Calculation – Short Notes',
-      subject: 'Workshop Calculation',
-      type: 'short',
-      emoji: '⚡'),
+    title: 'Workshop Calculation – Short Notes',
+    subject: 'Workshop Calculation',
+    type: 'short',
+    emoji: '⚡',
+    assetPath: 'assets/pdfs/workshop_short.pdf',
+  ),
   MaterialItem(
-      title: 'Workshop Calculation – Cheat Sheet',
-      subject: 'Workshop Calculation',
-      type: 'cheat',
-      emoji: '🚀'),
+    title: 'Workshop Calculation – Cheat Sheet',
+    subject: 'Workshop Calculation',
+    type: 'cheat',
+    emoji: '🚀',
+    assetPath: 'assets/pdfs/workshop_cheat.pdf',
+  ),
 
   // Mechanical Engineering
   MaterialItem(
-      title: 'Mechanical Engineering – Full Notes',
-      subject: 'Mechanical Engineering',
-      type: 'full',
-      emoji: '🔧'),
+    title: 'Mechanical Engineering – Full Notes',
+    subject: 'Mechanical Engineering',
+    type: 'full',
+    emoji: '🔧',
+    assetPath: 'assets/pdfs/mech_full.pdf',
+  ),
   MaterialItem(
-      title: 'Mechanical Engineering – Short Notes',
-      subject: 'Mechanical Engineering',
-      type: 'short',
-      emoji: '⚡'),
+    title: 'Mechanical Engineering – Short Notes',
+    subject: 'Mechanical Engineering',
+    type: 'short',
+    emoji: '⚡',
+    assetPath: 'assets/pdfs/mech_short.pdf',
+  ),
   MaterialItem(
-      title: 'Mechanical Engineering – Cheat Sheet',
-      subject: 'Mechanical Engineering',
-      type: 'cheat',
-      emoji: '🚀'),
+    title: 'Mechanical Engineering – Cheat Sheet',
+    subject: 'Mechanical Engineering',
+    type: 'cheat',
+    emoji: '🚀',
+    assetPath: 'assets/pdfs/mech_cheat.pdf',
+  ),
 ];
 
-class PdfPlaceholderPage extends StatelessWidget {
+class PdfViewerPage extends StatefulWidget {
   final MaterialItem item;
 
-  const PdfPlaceholderPage({super.key, required this.item});
+  const PdfViewerPage({super.key, required this.item});
+
+  @override
+  State<PdfViewerPage> createState() => _PdfViewerPageState();
+}
+
+class _PdfViewerPageState extends State<PdfViewerPage> {
+  PdfControllerPinch? _pdfController;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    try {
+      _pdfController = PdfControllerPinch(
+        document: PdfDocument.openAsset(widget.item.assetPath),
+      );
+    } catch (e) {
+      _error = 'Unable to open PDF. Please check if the file is added.';
+    }
+  }
+
+  @override
+  void dispose() {
+    _pdfController?.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(item.title)),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Text(
-          'Here we will show PDF for:\n\n'
-              '${item.title}\n\n'
-              '(Later we will connect real PDF viewer & Firebase.)',
-        ),
-      ),
+      appBar: AppBar(title: Text(widget.item.title)),
+      body: _error != null
+          ? Center(child: Text(_error!))
+          : _pdfController == null
+          ? const Center(child: CircularProgressIndicator())
+          : PdfViewPinch(controller: _pdfController!),
     );
   }
 }
