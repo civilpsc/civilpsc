@@ -1,47 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-import '../admin/admin_study_materials_screen.dart';
 import 'pdf_viewer_screen.dart';
 
-class StudyMaterialsHome extends StatelessWidget {
-  const StudyMaterialsHome({super.key});
+/// ---------------- Subjects list ----------------
 
-  @override
-  Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Row(
-            children: const [
-              Icon(Icons.menu_book_outlined),
-              SizedBox(width: 8),
-              Text('CIVILPSC Study Materials'),
-            ],
-          ),
-          bottom: const TabBar(
-            tabs: [
-              Tab(text: 'Full Notes'),
-              Tab(text: 'Short Notes'),
-              Tab(text: 'Quick Review'),
-            ],
-          ),
-        ),
-        backgroundColor: const Color(0xFFF5F6FF),
-        body: const TabBarView(
-          children: [
-            _StudyMaterialsTab(noteType: 'full'),
-            _StudyMaterialsTab(noteType: 'short'),
-            _StudyMaterialsTab(noteType: 'quick'),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/// same subjects as admin
 class StudySubject {
   final String id;
   final String name;
@@ -167,6 +130,110 @@ const List<StudySubject> kStudySubjects = [
   ),
 ];
 
+/// ---------------- Main screen ----------------
+
+class StudyMaterialsHome extends StatelessWidget {
+  const StudyMaterialsHome({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return DefaultTabController(
+      length: 3, // Full / Short / Quick
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: const Color(0xFF2469A7),
+          foregroundColor: Colors.white,
+          titleSpacing: 0,
+          title: Row(
+            children: const [
+              Icon(Icons.menu_book_outlined),
+              SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'CIVILPSC Study Materials',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          bottom: const PreferredSize(
+            preferredSize: Size.fromHeight(46),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: TabBar(
+                isScrollable: true,
+                indicatorColor: Colors.white,
+                labelColor: Colors.white,
+                unselectedLabelColor: Color(0xFFDDE6F0),
+                tabs: [
+                  Tab(
+                    child: _TabLabel(
+                      emoji: '📘',
+                      text: 'Full Notes',
+                    ),
+                  ),
+                  Tab(
+                    child: _TabLabel(
+                      emoji: '⚡',
+                      text: 'Short Notes',
+                    ),
+                  ),
+                  Tab(
+                    child: _TabLabel(
+                      emoji: '🚀',
+                      text: 'Quick Review',
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        backgroundColor: const Color(0xFFF5F6FF),
+        body: const TabBarView(
+          children: [
+            _StudyMaterialsTab(noteType: 'full'),
+            _StudyMaterialsTab(noteType: 'short'),
+            _StudyMaterialsTab(noteType: 'quick'),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Tab label with emoji + text
+class _TabLabel extends StatelessWidget {
+  final String emoji;
+  final String text;
+
+  const _TabLabel({
+    required this.emoji,
+    required this.text,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(emoji, style: const TextStyle(fontSize: 16)),
+        const SizedBox(width: 4),
+        Text(
+          text,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// ---------------- Tab body (list + Firestore) ----------------
+
 class _StudyMaterialsTab extends StatelessWidget {
   final String noteType; // full / short / quick
 
@@ -231,7 +298,7 @@ class _StudyMaterialsTab extends StatelessWidget {
         ),
         const SizedBox(height: 12),
 
-        // Subject list
+        // Subjects list
         Expanded(
           child: ListView.separated(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -277,7 +344,9 @@ class _StudyMaterialsTab extends StatelessWidget {
   }
 
   Future<void> _openPdfForSubject(
-      BuildContext context, StudySubject subject) async {
+      BuildContext context,
+      StudySubject subject,
+      ) async {
     final docId = '${subject.id}_$noteType';
 
     try {
@@ -299,8 +368,8 @@ class _StudyMaterialsTab extends StatelessWidget {
 
       final data = doc.data()!;
       final pdfUrl = data['pdfUrl'] as String;
-      final title = data['title'] as String? ??
-          '${subject.name} – ${_tabLabel()}';
+      final title =
+          data['title'] as String? ?? '${subject.name} – ${_tabLabel()}';
 
       Navigator.of(context).push(
         MaterialPageRoute(
