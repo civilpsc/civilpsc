@@ -1,6 +1,47 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-/// Subject model
+import '../admin/admin_study_materials_screen.dart';
+import 'pdf_viewer_screen.dart';
+
+class StudyMaterialsHome extends StatelessWidget {
+  const StudyMaterialsHome({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Row(
+            children: const [
+              Icon(Icons.menu_book_outlined),
+              SizedBox(width: 8),
+              Text('CIVILPSC Study Materials'),
+            ],
+          ),
+          bottom: const TabBar(
+            tabs: [
+              Tab(text: 'Full Notes'),
+              Tab(text: 'Short Notes'),
+              Tab(text: 'Quick Review'),
+            ],
+          ),
+        ),
+        backgroundColor: const Color(0xFFF5F6FF),
+        body: const TabBarView(
+          children: [
+            _StudyMaterialsTab(noteType: 'full'),
+            _StudyMaterialsTab(noteType: 'short'),
+            _StudyMaterialsTab(noteType: 'quick'),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// same subjects as admin
 class StudySubject {
   final String id;
   final String name;
@@ -13,7 +54,6 @@ class StudySubject {
   });
 }
 
-/// All subjects + emojis (Study Materials)
 const List<StudySubject> kStudySubjects = [
   StudySubject(
     id: 'building_materials',
@@ -31,7 +71,7 @@ const List<StudySubject> kStudySubjects = [
     emoji: '📐',
   ),
   StudySubject(
-    id: 'autocad_computer',
+    id: 'autocad',
     name: 'AutoCAD and Computer',
     emoji: '💻',
   ),
@@ -127,89 +167,53 @@ const List<StudySubject> kStudySubjects = [
   ),
 ];
 
-/// MAIN SCREEN – CIVILPSC Study Materials
-class StudyMaterialsHome extends StatelessWidget {
-  const StudyMaterialsHome({super.key});
+class _StudyMaterialsTab extends StatelessWidget {
+  final String noteType; // full / short / quick
+
+  const _StudyMaterialsTab({
+    required this.noteType,
+  });
+
+  String _tabLabel() {
+    switch (noteType) {
+      case 'short':
+        return 'Short Notes';
+      case 'quick':
+        return 'Quick Review';
+      case 'full':
+      default:
+        return 'Full Notes';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3, // Full / Short / Quick
-      child: Scaffold(
-        backgroundColor: const Color(0xFFF5F6FF),
-        appBar: AppBar(
-          backgroundColor: const Color(0xFF2469A7),
-          title: Row(
-            children: const [
-              Icon(Icons.menu_book_outlined, color: Colors.white),
-              SizedBox(width: 8),
-              Text(
-                'CIVILPSC Study Materials',
-                style: TextStyle(color: Colors.white),
-              ),
-            ],
-          ),
-          bottom: const TabBar(
-            labelColor: Colors.white,
-            unselectedLabelColor: Color(0xFFE3F2FD),
-            indicatorColor: Colors.white,
-            tabs: [
-              Tab(text: 'Full Notes'),
-              Tab(text: 'Short Notes'),
-              Tab(text: 'Quick Review'),
-            ],
-          ),
-        ),
-        body: Column(
-          children: const [
-            _TopBanner(),
-            Expanded(
-              child: TabBarView(
-                children: [
-                  _StudyMaterialsTab(notesTypeLabel: 'Full Notes'),
-                  _StudyMaterialsTab(notesTypeLabel: 'Short Notes'),
-                  _StudyMaterialsTab(notesTypeLabel: 'Quick Review'),
-                ],
+    final label = _tabLabel();
+
+    return Column(
+      children: [
+        const SizedBox(height: 12),
+        // Top info card
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(18),
+              gradient: const LinearGradient(
+                colors: [Color(0xFF4C8DFF), Color(0xFF6AC8FF)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/// BLUE GRADIENT BANNER
-class _TopBanner extends StatelessWidget {
-  const _TopBanner();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        gradient: const LinearGradient(
-          colors: [Color(0xFF4C8DFF), Color(0xFF6AC8FF)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
-          Icon(Icons.menu_book_rounded, color: Colors.white, size: 30),
-          SizedBox(width: 12),
-          Expanded(
-            child: Column(
+            child: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'Organised notes for every subject',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 16,
+                    fontSize: 15,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -224,68 +228,94 @@ class _TopBanner extends StatelessWidget {
               ],
             ),
           ),
-        ],
-      ),
+        ),
+        const SizedBox(height: 12),
+
+        // Subject list
+        Expanded(
+          child: ListView.separated(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            itemCount: kStudySubjects.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 10),
+            itemBuilder: (context, index) {
+              final subject = kStudySubjects[index];
+
+              return ListTile(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                tileColor: Colors.white,
+                leading: CircleAvatar(
+                  radius: 24,
+                  backgroundColor: const Color(0xFFE3F2FD),
+                  child: Text(
+                    subject.emoji,
+                    style: const TextStyle(fontSize: 24),
+                  ),
+                ),
+                title: Text(
+                  '${subject.name} – $label',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 15,
+                  ),
+                ),
+                subtitle: Text(
+                  subject.name,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Colors.black54,
+                  ),
+                ),
+                onTap: () => _openPdfForSubject(context, subject),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
-}
 
-/// ONE TAB – shows the same subject list with different note-type label
-class _StudyMaterialsTab extends StatelessWidget {
-  final String notesTypeLabel; // Full Notes / Short Notes / Quick Review
+  Future<void> _openPdfForSubject(
+      BuildContext context, StudySubject subject) async {
+    final docId = '${subject.id}_$noteType';
 
-  const _StudyMaterialsTab({required this.notesTypeLabel});
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('study_materials')
+          .doc(docId)
+          .get();
 
-  @override
-  Widget build(BuildContext context) {
-    return ListView.separated(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-      itemCount: kStudySubjects.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 10),
-      itemBuilder: (context, index) {
-        final subject = kStudySubjects[index];
-
-        return ListTile(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          tileColor: Colors.white,
-          leading: CircleAvatar(
-            radius: 22,
-            backgroundColor: const Color(0xFFE3F2FD),
-            child: Text(
-              subject.emoji,
-              style: const TextStyle(fontSize: 24),
+      if (!doc.exists || !(doc.data()?['pdfUrl'] is String)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Notes for ${subject.name} – ${_tabLabel()} not added yet',
             ),
           ),
-          title: Text(
-            '${subject.name} – $notesTypeLabel',
-            style: const TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 15,
-            ),
-          ),
-          subtitle: Text(
-            subject.name,
-            style: const TextStyle(
-              fontSize: 12,
-              color: Colors.black54,
-            ),
-          ),
-          onTap: () {
-            // ഇപ്പോൾ PDF connect ചെയ്തിട്ടില്ല.
-            // പിന്നെ Firebase / asset link add ചെയ്യുമ്പോൾ
-            // ഇവിടെ നിന്ന് PdfViewerScreen open ചെയാം.
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  'Notes for ${subject.name} ($notesTypeLabel) coming soon',
-                ),
-              ),
-            );
-          },
         );
-      },
-    );
+        return;
+      }
+
+      final data = doc.data()!;
+      final pdfUrl = data['pdfUrl'] as String;
+      final title = data['title'] as String? ??
+          '${subject.name} – ${_tabLabel()}';
+
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => PdfViewerScreen(
+            title: title,
+            pdfUrl: pdfUrl,
+          ),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to load note. Please try again.'),
+        ),
+      );
+    }
   }
 }
