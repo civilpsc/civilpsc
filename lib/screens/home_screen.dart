@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'study_materials_screen.dart';
 import 'pyq_exam_screen.dart';
+import '../admin/admin_home_screen.dart'; // <<< added line
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -16,15 +17,25 @@ class HomeScreen extends StatelessWidget {
           backgroundColor: const Color(0xFF2469A7),
           foregroundColor: Colors.white,
           elevation: 0,
-          title: Row(
-            children: const [
-              Icon(Icons.school, color: Colors.white),
-              SizedBox(width: 8),
-              Text(
-                'Civil PSC',
-                style: TextStyle(fontWeight: FontWeight.w700),
-              ),
-            ],
+          // 🔐 LONG PRESS ON TITLE -> ADMIN PANEL
+          title: GestureDetector(
+            onLongPress: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const AdminHomeScreen(),
+                ),
+              );
+            },
+            child: Row(
+              children: const [
+                Icon(Icons.school, color: Colors.white),
+                SizedBox(width: 8),
+                Text(
+                  'Civil PSC',
+                  style: TextStyle(fontWeight: FontWeight.w700),
+                ),
+              ],
+            ),
           ),
           actions: const [
             Padding(
