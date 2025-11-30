@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'study_materials_screen.dart';
+import 'pyq_exam_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -86,7 +87,7 @@ class HomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 10),
 
-            // Feature cards grid
+            // Feature cards grid (emoji version)
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -124,7 +125,13 @@ class HomeScreen extends StatelessWidget {
                       emoji: '📄',
                       title: 'PYQ Exams',
                       subtitle: 'Full previous papers',
-                      onTap: () => _showComingSoon(context),
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const PyqExamScreen(),
+                          ),
+                        );
+                      },
                     ),
                     _HomeFeatureCard(
                       emoji: '📅',
