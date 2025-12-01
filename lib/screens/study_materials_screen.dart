@@ -33,8 +33,9 @@ const List<StudySubject> kStudySubjects = [
     name: 'Engineering Drawing',
     emoji: '📐',
   ),
+  // ⬇️ IMPORTANT: id change cheythathu – autocad → autocad_computer
   StudySubject(
-    id: 'autocad',
+    id: 'autocad_computer',
     name: 'AutoCAD and Computer',
     emoji: '💻',
   ),
