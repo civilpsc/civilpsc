@@ -1,131 +1,135 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class AdminStudySubject {
+/// Simple model for admin subject row + dropdown
+class _AdminSubject {
   final String id;
   final String name;
   final String emoji;
 
-  const AdminStudySubject({
+  const _AdminSubject({
     required this.id,
     required this.name,
     required this.emoji,
   });
 }
 
-/// SAME subject list used in user Study Materials UI
-const List<AdminStudySubject> kAdminStudySubjects = [
-  AdminStudySubject(
+/// --- SUBJECT LIST (Study Materials) ---
+/// Firestore-ിൽ subjectId ആയി ഇവ ഉപയോഗിക്കും.
+const List<_AdminSubject> _subjects = [
+  _AdminSubject(
+    id: 'autocad_computer',
+    name: 'AutoCAD and Computer',
+    emoji: '💻',
+  ),
+  _AdminSubject(
     id: 'building_materials',
     name: 'Building Materials',
     emoji: '📚',
   ),
-  AdminStudySubject(
+  _AdminSubject(
     id: 'building_construction',
     name: 'Building Construction',
     emoji: '🏗️',
   ),
-  AdminStudySubject(
+  _AdminSubject(
     id: 'engineering_drawing',
     name: 'Engineering Drawing',
     emoji: '📐',
   ),
-  AdminStudySubject(
-    id: 'autocad',
-    name: 'AutoCAD and Computer',
-    emoji: '💻',
-  ),
-  AdminStudySubject(
-    id: 'irrigation_engineering',
-    name: 'Irrigation Engineering',
-    emoji: '💧',
-  ),
-  AdminStudySubject(
+  _AdminSubject(
     id: 'concrete_rcc',
     name: 'Concrete Technology & RCC',
     emoji: '🧱',
   ),
-  AdminStudySubject(
-    id: 'steel_design',
-    name: 'Steel Design',
-    emoji: '🔩',
+  _AdminSubject(
+    id: 'surveying_levelling',
+    name: 'Surveying and Levelling',
+    emoji: '🗺️',
   ),
-  AdminStudySubject(
+  _AdminSubject(
+    id: 'estimation_costing',
+    name: 'Estimation and Costing',
+    emoji: '🧮',
+  ),
+  _AdminSubject(
+    id: 'building_bye_laws',
+    name: 'Building Bye Laws',
+    emoji: '🏛️',
+  ),
+  _AdminSubject(
+    id: 'irrigation_hydrology',
+    name: 'Irrigation and Hydrology',
+    emoji: '💧',
+  ),
+  _AdminSubject(
+    id: 'transportation_engineering',
+    name: 'Transportation Engineering',
+    emoji: '🛣️',
+  ),
+  _AdminSubject(
     id: 'environmental_engineering',
     name: 'Environmental Engineering',
     emoji: '🌱',
   ),
-  AdminStudySubject(
-    id: 'hydrology',
-    name: 'Hydrology',
-    emoji: '💦',
-  ),
-  AdminStudySubject(
-    id: 'estimation_costing',
-    name: 'Estimation, Valuation & Costing',
-    emoji: '🧮',
-  ),
-  AdminStudySubject(
-    id: 'strength_of_materials',
-    name: 'Strength of Materials',
-    emoji: '🪨',
-  ),
-  AdminStudySubject(
-    id: 'highway_engineering',
-    name: 'Highway Engineering',
-    emoji: '🛣️',
-  ),
-  AdminStudySubject(
-    id: 'bridge_engineering',
-    name: 'Bridge Engineering',
-    emoji: '🌉',
-  ),
-  AdminStudySubject(
-    id: 'railway_engineering',
-    name: 'Railway Engineering',
-    emoji: '🚆',
-  ),
-  AdminStudySubject(
-    id: 'dock_harbour_tunnel',
-    name: 'Dock, Harbour & Tunnel Engineering',
-    emoji: '⚓',
-  ),
-  AdminStudySubject(
-    id: 'airport_engineering',
-    name: 'Airport Engineering',
-    emoji: '✈️',
-  ),
-  AdminStudySubject(
-    id: 'surveying_levelling',
-    name: 'Surveying & Levelling',
-    emoji: '🗺️',
-  ),
-  AdminStudySubject(
-    id: 'advanced_surveying',
-    name: 'Advanced Surveying',
-    emoji: '🧭',
-  ),
-  AdminStudySubject(
-    id: 'engineering_mechanics',
-    name: 'Engineering Mechanics',
+  _AdminSubject(
+    id: 'applied_mechanics',
+    name: 'Applied Mechanics',
     emoji: '⚙️',
   ),
-  AdminStudySubject(
+  _AdminSubject(
+    id: 'units_conversions',
+    name: 'Units and Conversions',
+    emoji: '📏',
+  ),
+  _AdminSubject(
     id: 'fluid_mechanics',
     name: 'Fluid Mechanics',
     emoji: '🌊',
   ),
-  AdminStudySubject(
-    id: 'workshop_calculation',
-    name: 'Workshop Calculation',
-    emoji: '🛠️',
+  _AdminSubject(
+    id: 'strength_of_material',
+    name: 'Strength of Material',
+    emoji: '🪨',
   ),
-  AdminStudySubject(
+  _AdminSubject(
+    id: 'structural_analysis',
+    name: 'Structural Analysis',
+    emoji: '🏗️',
+  ),
+  _AdminSubject(
+    id: 'steel_structure',
+    name: 'Design of Steel Structure',
+    emoji: '🔩',
+  ),
+  _AdminSubject(
+    id: 'geotechnical_engineering',
+    name: 'Geotechnical Engineering',
+    emoji: '⛰️',
+  ),
+  _AdminSubject(
+    id: 'construction_management',
+    name: 'Construction Management',
+    emoji: '📋',
+  ),
+  _AdminSubject(
+    id: 'architectural_engineering',
+    name: 'Architectural Engineering',
+    emoji: '🏛️',
+  ),
+  _AdminSubject(
     id: 'mechanical_engineering',
     name: 'Mechanical Engineering',
     emoji: '🔧',
   ),
 ];
+
+/// --- NOTE TYPES (Full / Short / Quick) ---
+const Map<String, String> _noteTypeLabels = {
+  'full': 'Full Notes',
+  'short': 'Short Notes',
+  'quick': 'Quick Review',
+};
 
 class AdminStudyMaterialsScreen extends StatelessWidget {
   const AdminStudyMaterialsScreen({super.key});
@@ -137,121 +141,132 @@ class AdminStudyMaterialsScreen extends StatelessWidget {
         title: const Text('Admin – Study Materials'),
       ),
       backgroundColor: const Color(0xFFF5F6FF),
-      body: ListView.separated(
-        padding: const EdgeInsets.all(16),
-        itemCount: kAdminStudySubjects.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 10),
-        itemBuilder: (context, index) {
-          final subject = kAdminStudySubjects[index];
-
-          return ListTile(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 12),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              'Select subject and add / update PDF link.',
+              style: TextStyle(fontSize: 13, color: Colors.black54),
             ),
-            tileColor: Colors.white,
-            leading: CircleAvatar(
-              radius: 24,
-              backgroundColor: const Color(0xFFE3F2FD),
-              child: Text(
-                subject.emoji,
-                style: const TextStyle(fontSize: 24),
-              ),
+          ),
+          const SizedBox(height: 8),
+          Expanded(
+            child: ListView.separated(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+              itemCount: _subjects.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 10),
+              itemBuilder: (context, index) {
+                final subject = _subjects[index];
+                return ListTile(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  tileColor: Colors.white,
+                  leading: CircleAvatar(
+                    radius: 24,
+                    backgroundColor: const Color(0xFFE3F2FD),
+                    child: Text(
+                      subject.emoji,
+                      style: const TextStyle(fontSize: 24),
+                    ),
+                  ),
+                  title: Text(
+                    subject.name,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 15,
+                    ),
+                  ),
+                  subtitle: const Text(
+                    'Tap to add / update PDF',
+                    style: TextStyle(fontSize: 12, color: Colors.black54),
+                  ),
+                  onTap: () => _openEditSheet(context, subject),
+                );
+              },
             ),
-            title: Text(
-              subject.name,
-              style: const TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 15,
-              ),
-            ),
-            subtitle: const Text(
-              'Tap to add / update PDF',
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.black54,
-              ),
-            ),
-            onTap: () => _openUploadSheet(context, subject),
-          );
-        },
+          ),
+        ],
       ),
     );
   }
 
-  void _openUploadSheet(BuildContext context, AdminStudySubject subject) {
+  void _openEditSheet(BuildContext context, _AdminSubject subject) {
+    String selectedType = 'full';
+    final titleController = TextEditingController(
+      text: '${subject.name} – ${_noteTypeLabels[selectedType]}',
+    );
+    final urlController = TextEditingController();
+    bool saving = false;
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (sheetContext) {
-        String noteType = 'full'; // full / short / quick
-        final TextEditingController urlController = TextEditingController();
-        bool saving = false;
-
-        return StatefulBuilder(
-          builder: (context, setState) {
-            Future<void> savePdf() async {
-              final pdfUrl = urlController.text.trim();
-              if (pdfUrl.isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Please enter PDF URL'),
-                  ),
-                );
-                return;
-              }
-
-              try {
-                setState(() {
-                  saving = true;
-                });
-
-                final docId = '${subject.id}_$noteType';
-
-                await FirebaseFirestore.instance
-                    .collection('study_materials')
-                    .doc(docId)
-                    .set({
-                  'subjectId': subject.id,
-                  'subjectName': subject.name,
-                  'noteType': noteType, // full / short / quick
-                  'title': '${subject.name} – ${_labelFromNoteType(noteType)}',
-                  'pdfUrl': pdfUrl,
-                  'createdAt': FieldValue.serverTimestamp(),
-                });
-
-                if (context.mounted) {
-                  Navigator.of(sheetContext).pop();
+      builder: (ctx) {
+        final viewInsets = MediaQuery.of(ctx).viewInsets;
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: viewInsets.bottom,
+          ),
+          child: StatefulBuilder(
+            builder: (context, setModalState) {
+              Future<void> save() async {
+                if (urlController.text.trim().isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        'Saved ${_labelFromNoteType(noteType)} for ${subject.name}',
-                      ),
-                    ),
+                    const SnackBar(content: Text('PDF URL is required')),
                   );
+                  return;
                 }
-              } catch (e) {
-                setState(() {
-                  saving = false;
-                });
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Failed to save PDF'),
-                  ),
-                );
-              }
-            }
 
-            return Padding(
-              padding: EdgeInsets.only(
-                left: 16,
-                right: 16,
-                top: 16,
-                bottom: MediaQuery.of(sheetContext).viewInsets.bottom + 16,
-              ),
-              child: SingleChildScrollView(
+                setModalState(() => saving = true);
+
+                final typeLabel = _noteTypeLabels[selectedType]!;
+                final fallbackTitle = '${subject.name} – $typeLabel';
+
+                try {
+                  await FirebaseFirestore.instance
+                      .collection('study_materials')
+                      .doc('${subject.id}_$selectedType')
+                      .set({
+                    'subjectId': subject.id,
+                    'subjectName': subject.name,
+                    'type': selectedType,
+                    'title': (titleController.text.trim().isEmpty)
+                        ? fallbackTitle
+                        : titleController.text.trim(),
+                    'pdfUrl': urlController.text.trim(),
+                    'updatedAt': FieldValue.serverTimestamp(),
+                  }, SetOptions(merge: true));
+
+                  if (context.mounted) {
+                    Navigator.of(context).pop();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          '$typeLabel for ${subject.name} saved ✅',
+                        ),
+                      ),
+                    );
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Error saving: $e')),
+                    );
+                  }
+                } finally {
+                  setModalState(() => saving = false);
+                }
+              }
+
+              return Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -260,10 +275,10 @@ class AdminStudyMaterialsScreen extends StatelessWidget {
                       child: Container(
                         width: 40,
                         height: 4,
-                        margin: const EdgeInsets.only(bottom: 16),
+                        margin: const EdgeInsets.only(bottom: 12),
                         decoration: BoxDecoration(
-                          color: Colors.grey.shade400,
-                          borderRadius: BorderRadius.circular(4),
+                          color: Colors.black26,
+                          borderRadius: BorderRadius.circular(2),
                         ),
                       ),
                     ),
@@ -274,86 +289,75 @@ class AdminStudyMaterialsScreen extends StatelessWidget {
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 4),
                     const Text(
                       'Select note type and paste PDF URL.',
-                      style: TextStyle(fontSize: 13, color: Colors.black54),
+                      style: TextStyle(fontSize: 12, color: Colors.black54),
                     ),
-                    const SizedBox(height: 16),
-                    const Text(
-                      'Note type',
-                      style:
-                      TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-                    ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
-                      value: noteType,
-                      items: const [
-                        DropdownMenuItem(
-                          value: 'full',
-                          child: Text('Full Notes'),
+                      value: selectedType,
+                      decoration: const InputDecoration(
+                        labelText: 'Note type',
+                        border: OutlineInputBorder(),
+                      ),
+                      items: _noteTypeLabels.entries
+                          .map(
+                            (e) => DropdownMenuItem(
+                          value: e.key,
+                          child: Text(e.value),
                         ),
-                        DropdownMenuItem(
-                          value: 'short',
-                          child: Text('Short Notes'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'quick',
-                          child: Text('Quick Review'),
-                        ),
-                      ],
+                      )
+                          .toList(),
                       onChanged: (value) {
                         if (value == null) return;
-                        setState(() {
-                          noteType = value;
+                        setModalState(() {
+                          selectedType = value;
+                          final label = _noteTypeLabels[selectedType]!;
+                          titleController.text = '${subject.name} – $label';
                         });
                       },
                     ),
-                    const SizedBox(height: 16),
-                    const Text(
-                      'PDF URL',
-                      style:
-                      TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: titleController,
+                      decoration: const InputDecoration(
+                        labelText: 'Title (shown to students)',
+                        border: OutlineInputBorder(),
+                      ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 12),
                     TextField(
                       controller: urlController,
                       decoration: const InputDecoration(
-                        hintText: 'Paste public PDF link here',
+                        labelText: 'PDF URL (Firebase Storage link)',
                         border: OutlineInputBorder(),
                       ),
-                      keyboardType: TextInputType.url,
-                      minLines: 1,
-                      maxLines: 3,
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 16),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
-                        onPressed: saving ? null : savePdf,
-                        icon: const Icon(Icons.save),
+                        icon: saving
+                            ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                          ),
+                        )
+                            : const Icon(Icons.save),
                         label: Text(saving ? 'Saving...' : 'Save PDF'),
+                        onPressed: saving ? null : save,
                       ),
                     ),
                   ],
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         );
       },
     );
-  }
-
-  static String _labelFromNoteType(String noteType) {
-    switch (noteType) {
-      case 'short':
-        return 'Short Notes';
-      case 'quick':
-        return 'Quick Review';
-      case 'full':
-      default:
-        return 'Full Notes';
-    }
   }
 }

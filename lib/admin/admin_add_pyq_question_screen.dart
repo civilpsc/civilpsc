@@ -1,5 +1,25 @@
 import 'package:flutter/material.dart';
 
+/// All available posts for PYQ questions (dropdown list)
+const List<String> kPostNames = [
+  'Draftsman / Overseer Gr III',
+  'Draftsman / Overseer Gr II',
+  'Draftsman / Overseer Gr I',
+  'Work Superintendent',
+  'Junior Instructor',
+  'Tracer',
+  'Surveyor',
+  'Tradesman',
+  'Project Engineer',
+  'Town Planning',
+  'Assistant Engineer',
+  'Junior Technical Officer',
+  'Assistant Professor & Lecturer',
+  'Architectural Draftsman',
+  'Vocational Instructor',
+  'Model exam',
+];
+
 /// Simple placeholder screen for adding PYQ questions.
 /// Later we can connect this to Firestore.
 class AdminAddPyqQuestionScreen extends StatefulWidget {
@@ -13,7 +33,9 @@ class AdminAddPyqQuestionScreen extends StatefulWidget {
 class _AdminAddPyqQuestionScreenState extends State<AdminAddPyqQuestionScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  final _postNameController = TextEditingController();
+  // Name of the post is now a dropdown, not a TextField
+  String? _selectedPostName;
+
   final _paperCodeController = TextEditingController();
   final _questionNumberController = TextEditingController(text: '1');
   final _questionController = TextEditingController();
@@ -54,7 +76,6 @@ class _AdminAddPyqQuestionScreenState extends State<AdminAddPyqQuestionScreen> {
 
   @override
   void dispose() {
-    _postNameController.dispose();
     _paperCodeController.dispose();
     _questionNumberController.dispose();
     _questionController.dispose();
@@ -68,16 +89,44 @@ class _AdminAddPyqQuestionScreenState extends State<AdminAddPyqQuestionScreen> {
   void _saveQuestion() {
     if (!_formKey.currentState!.validate()) return;
 
-    // Later: send to Firestore
+    final postName = _selectedPostName;
+    final paperCode = _paperCodeController.text.trim();
+    final questionNumber = _questionNumberController.text.trim();
+    final subject = _selectedSubject;
+    final questionText = _questionController.text.trim();
+    final optionA = _optionAController.text.trim();
+    final optionB = _optionBController.text.trim();
+    final optionC = _optionCController.text.trim();
+    final optionD = _optionDController.text.trim();
+    final correctOption = _correctOption;
+
+    // TODO: connect this map to Firestore later
+    final payload = {
+      'postName': postName,
+      'paperCode': paperCode,
+      'questionNumber': questionNumber,
+      'subject': subject,
+      'question': questionText,
+      'optionA': optionA,
+      'optionB': optionB,
+      'optionC': optionC,
+      'optionD': optionD,
+      'correctOption': correctOption,
+    };
+    // ignore: avoid_print
+    print(payload);
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Question saved (dummy). Firestore hook coming later.'),
       ),
     );
 
-    // Optionally clear question + options, keep paper code and subject
-    _questionNumberController.text =
-        (int.tryParse(_questionNumberController.text) ?? 1 + 1).toString();
+    // Increase question number, clear only question + options
+    final currentQ =
+        int.tryParse(_questionNumberController.text.trim()) ?? 1;
+    _questionNumberController.text = (currentQ + 1).toString();
+
     _questionController.clear();
     _optionAController.clear();
     _optionBController.clear();
@@ -98,16 +147,33 @@ class _AdminAddPyqQuestionScreenState extends State<AdminAddPyqQuestionScreen> {
           key: _formKey,
           child: Column(
             children: [
-              TextFormField(
-                controller: _postNameController,
+              // -------- Name of the post (DROPDOWN) --------
+              DropdownButtonFormField<String>(
+                value: _selectedPostName,
                 decoration: const InputDecoration(
                   labelText: 'Name of the post',
                   border: OutlineInputBorder(),
                 ),
+                items: kPostNames
+                    .map(
+                      (post) => DropdownMenuItem<String>(
+                    value: post,
+                    child: Text(
+                      post,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                )
+                    .toList(),
+                onChanged: (value) {
+                  setState(() => _selectedPostName = value);
+                },
                 validator: (value) =>
                 (value == null || value.isEmpty) ? 'Required' : null,
               ),
               const SizedBox(height: 12),
+
+              // -------- Paper code --------
               TextFormField(
                 controller: _paperCodeController,
                 decoration: const InputDecoration(
@@ -118,6 +184,8 @@ class _AdminAddPyqQuestionScreenState extends State<AdminAddPyqQuestionScreen> {
                 (value == null || value.isEmpty) ? 'Required' : null,
               ),
               const SizedBox(height: 12),
+
+              // -------- Question number + Subject row --------
               Row(
                 children: [
                   Expanded(
@@ -161,6 +229,8 @@ class _AdminAddPyqQuestionScreenState extends State<AdminAddPyqQuestionScreen> {
                 ],
               ),
               const SizedBox(height: 12),
+
+              // -------- Question text --------
               TextFormField(
                 controller: _questionController,
                 maxLines: 3,
@@ -172,6 +242,8 @@ class _AdminAddPyqQuestionScreenState extends State<AdminAddPyqQuestionScreen> {
                 (value == null || value.isEmpty) ? 'Required' : null,
               ),
               const SizedBox(height: 12),
+
+              // -------- Options A–D --------
               TextFormField(
                 controller: _optionAController,
                 decoration: const InputDecoration(
@@ -212,6 +284,8 @@ class _AdminAddPyqQuestionScreenState extends State<AdminAddPyqQuestionScreen> {
                 (value == null || value.isEmpty) ? 'Required' : null,
               ),
               const SizedBox(height: 12),
+
+              // -------- Correct option dropdown --------
               DropdownButtonFormField<String>(
                 value: _correctOption,
                 decoration: const InputDecoration(
@@ -233,6 +307,8 @@ class _AdminAddPyqQuestionScreenState extends State<AdminAddPyqQuestionScreen> {
                 },
               ),
               const SizedBox(height: 18),
+
+              // -------- Save button --------
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
