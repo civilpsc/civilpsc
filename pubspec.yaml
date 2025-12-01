@@ -32,3 +32,4 @@ flutter:
   assets:
     - assets/icons/app_icon.png
     - assets/pdfs/
+    - assets/images/omr.png
